@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var { getAll, getAspirantById, registerAspirant } = require('../controllers/controller.Aspirants');
+var { getAll, getAspirantById, registerAspirant, aspirantLogin } = require('../controllers/controller.Aspirants');
 
 /** GET aspirants. 
  * This route returns all aspirants saved in the db
@@ -28,7 +28,7 @@ router.get('/aspirants', async (req, res, next) => {
  * }
  * - when user isn't:
  * {
- *  status: 'not found',
+ *  status: 'not_found',
  *  data: null
  * }
 */
@@ -42,36 +42,33 @@ router.get('/aspirants/:aspirant_id', async (req, res, next) => {
 });
 
 /** POST aspirants. 
- * Try to create a new aspirant.
- * request's body:
- * {
- *  storeKeeperId: <aspirant's storeekeeper id>,
- *  email: <aspirant's email>
- * }
- * response's body:
- * - If it was possible to create:
- * {
- *  status: 'ok',
- *  data: newAspirantCreated
- * }
- * - If the aspirant is already registerd:
- * {
- *  status: 'duplicate',
- *  data: null
- * }
+ * This endpoint login an aspirant to the database.
+ * the response body has the possible status:
  * 
+ * - When given email is not linked to any rappitendero:
+ * { status: 'not_courier' }
+ * 
+ * - When given email is linked to a rappitendero but password is wrong:
+ * { status: 'invalid_credentials' }
+ * 
+ * - When aspirant is already register in our database:
+ * { status: 'duplicated' }
+ * 
+ * - When everything done correctly:
+ * { status: 'ok' }
+ * 
+ * - When somenthing went wrong trying to get the storekeeper id:
+ * { status: 'error_getting_id'}
 */
 router.post('/aspirants', async (req, res, next) => {
   data = req.body;
   console.log(data);
 
-  if (!data.storeKeeperId || !data.email) return res.status(400).json({ 'message': 'Bad body' });
+  if (!data.email || !data.password) return res.status(400).json({ 'message': 'Bad body' });
 
-  let aspirant = await registerAspirant(data);
-  let status = (aspirant) ? 'ok' : 'duplicate';
+  let login = await aspirantLogin(data);
   return res.json({
-    status: status,
-    data: aspirant
+    status: login.status,
   })
 });
 
