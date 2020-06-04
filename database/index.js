@@ -6,8 +6,8 @@ const sequelize = new Sequelize('bvoqkfkyktqwe5sxkgpy', 'ugveypdjqgy46afa', 'DqE
   dialect: 'mysql'
 });
 
-const aspirants = sequelize.import('./models/aspirants');
-const investors = sequelize.import('./models/investors');
+const Aspirants = sequelize.import('./models/aspirants');
+const Investors = sequelize.import('./models/investors');
 
 
-module.exports = { aspirants, investors };
+module.exports = { Aspirants, Investors };
