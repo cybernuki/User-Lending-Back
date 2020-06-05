@@ -67,10 +67,7 @@ router.post('/aspirants', async (req, res, next) => {
   if (!data.email || !data.password) return res.status(400).json({ 'message': 'Bad body' });
 
   let login = await aspirantLogin(data);
-  return res.json({
-    status: login.status,
-    data: login.data
-  })
+  return res.send(login)
 });
 
 module.exports = router;

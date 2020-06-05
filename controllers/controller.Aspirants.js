@@ -29,7 +29,7 @@ const registerAspirant = async (data) => {
     return aspirants
   } catch (error) {
 
-    if (error.errors[0].type == 'unique violation') return null
+    if (error.errors[0].type == 'unique violation') return getAspirantById(data.storeKeeperId)
     console.error(error);
   }
 }
