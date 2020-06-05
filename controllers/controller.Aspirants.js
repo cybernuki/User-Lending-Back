@@ -118,9 +118,9 @@ const aspirantLogin = async (data) => {
 
   data.storeKeeperId = id;
   const aspirant = await registerAspirant(data);
-  if (!aspirant) return { status: 'duplicated' };
+  if (!aspirant) return { status: 'duplicated', data: aspirant };
 
-  return { status: 'ok' };
+  return { status: 'ok', data: aspirant };
 };
 
 module.exports = { getAll, getAspirantById, registerAspirant, registerAspirant, aspirantLogin }
