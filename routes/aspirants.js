@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var { getAll, getAspirantById, registerAspirant, aspirantLogin } = require('../controllers/controller.Aspirants');
+var { getAll, getAspirantById, aspirantLogin } = require('../controllers/controller.Aspirants');
 
 /** GET aspirants. 
  * This route returns all aspirants saved in the db
@@ -69,6 +69,7 @@ router.post('/aspirants', async (req, res, next) => {
   let login = await aspirantLogin(data);
   return res.json({
     status: login.status,
+    data: login.data
   })
 });
 
