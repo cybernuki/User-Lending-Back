@@ -1,11 +1,13 @@
 module.exports = (sequelize, DataTypes) => {
   return sequelize.define('Investors', {
-    storeKeeperId: {
+    email: {
       type: DataTypes.STRING,
       primaryKey: true,
       unique: true
     },
-    email: { type: DataTypes.STRING, unique: true },
+    amount: {
+      type: DataTypes.FLOAT
+    }
   }, {
     timestamps: false,
   });
