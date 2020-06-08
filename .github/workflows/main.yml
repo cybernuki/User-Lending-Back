@@ -39,9 +39,9 @@ jobs:
       env:
         CI: true
       
-    - name: yarn build
+    - name: yarn dev
       run: |
-        yarn run build --if-present
+        yarn run dev --if-present
 
     # Deploy to Heroku using api key and credentials
     - name: Add remote origin
