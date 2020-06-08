@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
-    "dev": "nodemon ./bin/www"
+    "dev": "nodemon ./bin/www",
+    "ins": "npm install & npm install --save-dev cross-env & npm install mocha --save-dev & npm audit fix"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
