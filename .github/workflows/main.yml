@@ -46,7 +46,7 @@ jobs:
     # Deploy to Heroku using api key and credentials
     - name: Add remote origin
       run: |
-        git remote add heroku https://heroku:$cb7bd9a2-529d-474e-ac5b-c18a15ee5e0b@git.heroku.com/$userlending-ci.git
+        git remote add heroku https://heroku:${{ secrets.HEROKU_API_KEY }}@git.heroku.com/${{ secrets.HEROKU_APP_NAME }}.git
     - name: Deploy to Heroku
       run: |
         git push heroku HEAD:master -f
