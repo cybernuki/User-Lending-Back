@@ -8,6 +8,8 @@ const sequelize = new Sequelize('bvoqkfkyktqwe5sxkgpy', 'ugveypdjqgy46afa', 'DqE
 
 const Aspirants = sequelize.import('./models/aspirants');
 const Investors = sequelize.import('./models/investors');
+const Funds = sequelize.import('./models/funds');
 
+Funds.belongsTo(Aspirants, { foreignKey: 'storeKeeperId', as: 'aspirantId' });
 
-module.exports = { Aspirants, Investors };
+module.exports = { Aspirants, Investors, Funds };
