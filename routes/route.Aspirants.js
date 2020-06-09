@@ -67,6 +67,10 @@ router.post('/aspirants', async (req, res, next) => {
   if (!data.email || !data.password) return res.status(400).json({ 'message': 'Bad body' });
 
   let login = await aspirantLogin(data);
+
+  if (login.status == 'ok') {
+    //create a fund
+  }
   return res.send(login)
 });
 

@@ -2,8 +2,8 @@ const express = require('express');
 const logger = require('morgan');
 const cors = require('cors')
 
-const aspirantsRouter = require('./routes/aspirants');
-const investorsRouter = require('./routes/investors');
+const aspirantsRouter = require('./routes/route.Aspirants');
+const investorsRouter = require('./routes/route.Investors');
 
 const app = express();
 const prefix = '/api/v1/';
