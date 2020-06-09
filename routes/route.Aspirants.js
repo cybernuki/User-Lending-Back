@@ -1,6 +1,7 @@
-var express = require('express');
-var router = express.Router();
-var { getAll, getAspirantById, aspirantLogin } = require('../controllers/controller.Aspirants');
+const express = require('express');
+const router = express.Router();
+const aspirantsUtilities = require('../controllers/controller.Aspirants'),
+  generalController = require('../controllers');
 
 /** GET aspirants. 
  * This route returns all aspirants saved in the db
@@ -11,7 +12,7 @@ var { getAll, getAspirantById, aspirantLogin } = require('../controllers/control
  * }
 */
 router.get('/aspirants', async (req, res, next) => {
-  const aspirants = await getAll()
+  const aspirants = await aspirantsUtilities.getAll()
   return res.json({
     status: 'ok',
     data: aspirants
@@ -33,7 +34,7 @@ router.get('/aspirants', async (req, res, next) => {
  * }
 */
 router.get('/aspirants/:aspirant_id', async (req, res, next) => {
-  const aspirant = await getAspirantById(req.params.aspirant_id)
+  const aspirant = await aspirantsUtilities.search(req.params.aspirant_id)
   const status = (aspirant) ? 'ok' : 'not_found';
   return res.json({
     status: status,
@@ -66,11 +67,8 @@ router.post('/aspirants', async (req, res, next) => {
 
   if (!data.email || !data.password) return res.status(400).json({ 'message': 'Bad body' });
 
-  let login = await aspirantLogin(data);
+  let login = await generalController.aspirantLogin(data);
 
-  if (login.status == 'ok') {
-    //create a fund
-  }
   return res.send(login)
 });
 
