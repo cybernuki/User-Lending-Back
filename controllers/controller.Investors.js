@@ -1,4 +1,4 @@
-const { Investors } = require('../database')
+const models = require('../models');
 
 
 /** - searchInvestor
@@ -8,7 +8,7 @@ const { Investors } = require('../database')
  * @returns found investor or null;
  */
 const searchInvestor = async (investorEmail) => {
-  const investor = await Investors.findOne({
+  const investor = await models.Investors.findOne({
     where: {
       email: investorEmail
     }
@@ -26,7 +26,7 @@ const searchInvestor = async (investorEmail) => {
  */
 const updateInversion = async (email, amount) => {
   try {
-    const result = await Investors.increment('amount',
+    const result = await models.Investors.increment('amount',
       {
         by: amount,
         where: {
@@ -50,7 +50,7 @@ const updateInversion = async (email, amount) => {
  */
 const createInvestor = async (email, amount) => {
   try {
-    const investor = await Investors.create({
+    const investor = await models.Investors.create({
       email: email,
       amount: amount
     });

@@ -1,16 +1,17 @@
-const { Aspirants } = require('../database')
+const models = require('../models')
 const axios = require('axios').default
-
-
+//--------------------------------------------------------------------
+// ------------------------Aspirants Utilities------------------------
+//--------------------------------------------------------------------
 // get all aspirant
 const getAll = async () => {
-  const aspirants = await Aspirants.findAll({})
+  const aspirants = await models.Aspirants.findAll({})
   return aspirants
 }
 
 // get by id
 const getAspirantById = async (aspirantId) => {
-  const aspirants = await Aspirants.findOne({
+  const aspirants = await models.Aspirants.findOne({
     where: {
       storeKeeperId: aspirantId
     }
@@ -22,7 +23,7 @@ const getAspirantById = async (aspirantId) => {
 // Register new aspirant
 const registerAspirant = async (data) => {
   try {
-    const aspirants = await Aspirants.create({
+    const aspirants = await models.Aspirants.create({
       storeKeeperId: data.storeKeeperId,
       email: data.email
     })
@@ -92,7 +93,6 @@ const getStoreKeeperId = async (token) => {
       'Authorization': `Bearer ${token}`,
     }
   }
-
   try {
     const response = await axios.get('http://microservices.dev.rappi.com/api/storekeepers-ms/storekeeper/rappitendero/profile?cache=false', options)
     return response.data.id;
