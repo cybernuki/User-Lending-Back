@@ -36,7 +36,7 @@ npm run test
 
 * Twitter: [@Jdpa357 ](https://twitter.com/Jdpa357 )
 * Github: [@cybernuki, @FeliPrado31, @danny099, @Jdpa357 ](https://github.com/cybernuki, https://github.com/FeliPrado31, https://github.com/danny099, https://github.com/Jdpa357 )
-* LinkedIn: [@juan-david-portilla-alzate](https://linkedin.com/in/https:\/\/www.linkedin.com\/in\/juan-david-portilla-alzate-536215177\/)
+* LinkedIn: [@juan-david-portilla-alzate](https://linkedin.com/in/juan-david-portilla-alzate-536215177\/)
 
 ## Show your support
 
