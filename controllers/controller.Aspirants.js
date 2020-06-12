@@ -24,16 +24,16 @@ aspirantsController.search = async (aspirantId) => {
 
 
 // Register new aspirant
-aspirantsController.create = async (data) => {
+aspirantsController.create = async (aspirant_id, email) => {
   try {
     const aspirants = await models.Aspirants.create({
-      storeKeeperId: data.storeKeeperId,
-      email: data.email
+      storeKeeperId: aspirant_id,
+      email: email
     })
     return aspirants
   } catch (error) {
 
-    if (error.errors[0].type == 'unique violation') return aspirantsController.search(data.storeKeeperId)
+    if (error.errors[0].type == 'unique violation') return aspirantsController.search(aspirant_id)
     console.error(error);
   }
 }
