@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const aspirantsUtilities = require('../controllers/controller.Aspirants'),
-  generalController = require('../controllers');
+const { getAll, search, registAspirant } = require('../controllers/controller.Aspirants');
 
 /** GET aspirants. 
  * This route returns all aspirants saved in the db
@@ -11,13 +10,7 @@ const aspirantsUtilities = require('../controllers/controller.Aspirants'),
  *  data: [aspirants]
  * }
 */
-router.get('/aspirants', async (req, res, next) => {
-  const aspirants = await aspirantsUtilities.getAll()
-  return res.json({
-    status: 'ok',
-    data: aspirants
-  })
-});
+router.get('/aspirants', getAll);
 
 /** GET aspirant/:aspirant_id 
  * Execute a search for the given aspirant_id
@@ -33,14 +26,7 @@ router.get('/aspirants', async (req, res, next) => {
  *  data: null
  * }
 */
-router.get('/aspirants/:aspirant_id', async (req, res, next) => {
-  const aspirant = await aspirantsUtilities.search(req.params.aspirant_id)
-  const status = (aspirant) ? 'ok' : 'not_found';
-  return res.json({
-    status: status,
-    data: aspirant
-  })
-});
+router.get('/aspirants/:aspirant_id', search);
 
 /** POST aspirants. 
  * This endpoint login an aspirant to the database.
@@ -61,15 +47,6 @@ router.get('/aspirants/:aspirant_id', async (req, res, next) => {
  * - When somenthing went wrong trying to get the storekeeper id:
  * { status: 'error_getting_id'}
 */
-router.post('/aspirants', async (req, res, next) => {
-  data = req.body;
-  console.log(data);
-
-  if (!data.email || !data.password) return res.status(400).json({ 'message': 'Bad body' });
-
-  let login = await generalController.aspirantLogin(data);
-
-  return res.send(login)
-});
+router.post('/aspirants', registAspirant);
 
 module.exports = router;
