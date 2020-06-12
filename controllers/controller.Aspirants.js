@@ -1,16 +1,19 @@
 const models = require('../models')
 const axios = require('axios').default
+
+const aspirantsController = {};
+
 //--------------------------------------------------------------------
 // ------------------------Aspirants Utilities------------------------
 //--------------------------------------------------------------------
 // get all aspirant
-const getAll = async () => {
+aspirantsController.getAll = async () => {
   const aspirants = await models.Aspirants.findAll({})
   return aspirants
 }
 
 // get by id
-const getAspirantById = async (aspirantId) => {
+aspirantsController.search = async (aspirantId) => {
   const aspirants = await models.Aspirants.findOne({
     where: {
       storeKeeperId: aspirantId
@@ -21,7 +24,7 @@ const getAspirantById = async (aspirantId) => {
 
 
 // Register new aspirant
-const registerAspirant = async (data) => {
+aspirantsController.create = async (data) => {
   try {
     const aspirants = await models.Aspirants.create({
       storeKeeperId: data.storeKeeperId,
@@ -30,7 +33,7 @@ const registerAspirant = async (data) => {
     return aspirants
   } catch (error) {
 
-    if (error.errors[0].type == 'unique violation') return getAspirantById(data.storeKeeperId)
+    if (error.errors[0].type == 'unique violation') return aspirantsController.search(data.storeKeeperId)
     console.error(error);
   }
 }
@@ -40,7 +43,7 @@ const registerAspirant = async (data) => {
  * 
  * returns 'none' if it is not a courier, and 'courier' in otherwise.
  */
-const verifyEmail = async (email) => {
+aspirantsController.verifyEmail = async (email) => {
   try {
     const response = await axios.get(`http://microservices.dev.rappi.com/api/rt-auth-helper/user/type?email=${email}`);
     return response.data.user_type;
@@ -56,7 +59,7 @@ const verifyEmail = async (email) => {
  * 
  * return undefine if it was not possible to get the token, otherwise, returns the token.
  */
-const getAspirantToken = async (email, password) => {
+aspirantsController.getToken = async (email, password) => {
   const data = {
     'client_id': '74HzD01JbhZ44iE1kh7Gt6dfNjEKrtWiz0FqTUDQ',
     'client_secret': 'W8dOKF1mdHaG9wBNyoOCEBgHajO66GEl81lTDu2P',
@@ -86,7 +89,7 @@ const getAspirantToken = async (email, password) => {
  * 
  * @param {*} token 
  */
-const getStoreKeeperId = async (token) => {
+aspirantsController.getStoreKeeperId = async (token) => {
   const options = {
     headers: {
       'Content-Type': 'application/json',
@@ -101,26 +104,5 @@ const getStoreKeeperId = async (token) => {
   }
 }
 
-/**
- * 
- * @param {*} email 
- * @param {*} password 
- */
-const aspirantLogin = async (data) => {
-  const verify = await verifyEmail(data.email);
-  if (verify === 'none') return { status: 'not_courier' };
 
-  const token = await getAspirantToken(data.email, data.password);
-  if (!token) return { status: 'invalid_credentials' };
-
-  const id = await getStoreKeeperId(token);
-  if (!id) return { status: 'error_getting_id' };
-
-  data.storeKeeperId = id;
-  const aspirant = await registerAspirant(data);
-  if (!aspirant) return { status: 'duplicated', data: aspirant };
-
-  return { status: 'ok', data: aspirant };
-};
-
-module.exports = { getAll, getAspirantById, registerAspirant, registerAspirant, aspirantLogin }
+module.exports = aspirantsController;
