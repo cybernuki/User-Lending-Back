@@ -1,10 +1,20 @@
 const fundPool = require('./lib/fundPool');
+const fundLib = require('./lib/lib.funds');
+const { Funds } = require('./models'),
+  { FUNDS_STATUTS } = Funds;
 const models = require('./models');
 
-const EMAIL = 'dely.dely@rappi.com';
-const PASSWORD = '123456';
 let ASPIRANEMAIL = 'toipopocho@gmail.com'
-let ASPIRANDID = 'soy_unRT';
+let ASPIRANDID1 = 'soy_unRT';
+
+let ASPIRANEMAIL2 = 'toipopocho1@gmail.com'
+let ASPIRANDID2 = 'voy_segundis';
+
+let ASPIRANEMAIL3 = 'toipopocho2@gmail.com'
+let ASPIRANDID3 = 'nah_tercero';
+
+let ASPIRANEMAIL4 = 'toipopocho3@gmail.com'
+let ASPIRANDID4 = 'cuarto_sad';
 
 (async () => {
   await models.sequelize.sync({ force: true });
@@ -13,40 +23,85 @@ let ASPIRANDID = 'soy_unRT';
 
   //A previous found with gathering 
 
-  const aspirant = await models.Aspirants.create({
-    storeKeeperId: ASPIRANDID,
+  await models.Aspirants.create({
+    storeKeeperId: ASPIRANDID1,
     email: ASPIRANEMAIL
   })
-  console.log('aspirant done');
+  await models.Aspirants.create({
+    storeKeeperId: ASPIRANDID2,
+    email: ASPIRANEMAIL2
+  })
+  await models.Aspirants.create({
+    storeKeeperId: ASPIRANDID3,
+    email: ASPIRANEMAIL3
+  })
+  await models.Aspirants.create({
+    storeKeeperId: ASPIRANDID4,
+    email: ASPIRANEMAIL4
+  })
 
-  const fund = await models.Funds.create({
-    aspirant_id: aspirant.dataValues.storeKeeperId,
-    status: models.Funds.FUNDS_STATUTS['gathering'],
-  });
-  console.log('fund done');
 
-  //Create a rappi user
-  let result = await fundPool.registAspirant(EMAIL, PASSWORD);
-  console.log('create rappi user with correct credentials and non duplicate:\n');
-  console.log(result)
-  console.log('\n--------------------------\n');
+  const fund1 = await fundPool.addFund(ASPIRANDID1);
+  // console.log(fund1.dataValues);
 
-  //Create a non rappi user
-  result = await fundPool.registAspirant(`${EMAIL}123`, PASSWORD);
-  console.log(`create rappi user with non correct email:\n`);
-  console.log(result)
-  console.log('\n--------------------------\n');
+  const fund2 = await fundPool.addFund(ASPIRANDID2);
+  // console.log(fund2.dataValues);
 
-  //Create an aspirant with correct email but bad password
-  result = await fundPool.registAspirant(EMAIL, `${PASSWORD}123`);
-  console.log(`create rappi user with non correct password:\n`);
-  console.log(result)
-  console.log('\n--------------------------\n');
+  const fund3 = await fundPool.addFund(ASPIRANDID3);
+  // console.log(fund3.dataValues);
 
-  //Create an aspirant duplicate
-  result = await fundPool.registAspirant(EMAIL, PASSWORD);
-  console.log(`create rappi user duplicated:\n`);
-  console.log(result)
-  console.log('\n--------------------------\n');
+  const fund4 = await fundPool.addFund(ASPIRANDID4);
+  // console.log(fund4.dataValues);
 
+  let gathering = await fundLib.getGathering();
+  console.log(gathering.dataValues);
+
+  let Availabe = await fundLib.getNextWaiting();
+  console.log(Availabe.dataValues);
+
+  // Finish gathering
+  await fundLib.finishFund(gathering.dataValues.id);
+
+  gathering = await fundLib.getGathering();
+  console.log(gathering.dataValues);
+
+  Availabe = await fundLib.getNextWaiting();
+  console.log(Availabe.dataValues);
+
+  // Finish gathering
+  await fundLib.finishFund(gathering.dataValues.id);
+
+  gathering = await fundLib.getGathering();
+  console.log(gathering.dataValues);
+
+  Availabe = await fundLib.getNextWaiting();
+  console.log(Availabe.dataValues);
+
+  // Finish gathering
+  await fundLib.finishFund(gathering.dataValues.id);
+
+  gathering = await fundLib.getGathering();
+  console.log(gathering.dataValues);
+  Availabe = await fundLib.getNextWaiting();
+  console.log(!Availabe);
+
+  // Finish gathering
+  await fundLib.finishFund(gathering.dataValues.id);
+
+  gathering = await fundLib.getGathering();
+  console.log(!gathering);
+  Availabe = await fundLib.getNextWaiting();
+  console.log(!Availabe);
+
+
+  // Availabe = await fundLib.getNextWaiting();
+  // console.log(Availabe.dataValues);
+
+  // await Availabe.update({ status: FUNDS_STATUTS['gathering'] });
+  // console.log(Availabe.dataValues);
+
+  // Availabe = await fundLib.getNextWaiting();
+  // console.log(Availabe.dataValues);
+
+  models.sequelize.close();
 })();

@@ -35,7 +35,6 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: {
         name: 'fund_id',
         allowNull: false,
-        unique: true,
       }
     });
   }
