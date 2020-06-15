@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
+
 const { getAll, search, registAspirant } = require('../controllers/controller.Aspirants');
+
 
 /** GET aspirants. 
  * This route returns all aspirants saved in the db
@@ -10,7 +12,9 @@ const { getAll, search, registAspirant } = require('../controllers/controller.As
  *  data: [aspirants]
  * }
 */
+
 router.get('/aspirants', getAll);
+
 
 /** GET aspirant/:aspirant_id 
  * Execute a search for the given aspirant_id
@@ -26,7 +30,10 @@ router.get('/aspirants', getAll);
  *  data: null
  * }
 */
+
 router.get('/aspirants/:aspirant_id', search);
+
+
 
 /** POST aspirants. 
  * This endpoint login an aspirant to the database.
@@ -47,6 +54,8 @@ router.get('/aspirants/:aspirant_id', search);
  * - When somenthing went wrong trying to get the storekeeper id:
  * { status: 'error_getting_id'}
 */
+
 router.post('/aspirants', registAspirant);
+
 
 module.exports = router;
