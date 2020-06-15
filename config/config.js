@@ -1,9 +1,9 @@
 module.exports = {
   development: {
-    username: '<db username>',
-    password: '<db password>',
-    database: '<db name>',
-    host: '<db host>',
+    username: 'ugveypdjqgy46afa',
+    password: 'DqE8RK3h6HYDRcYpBqzi',
+    database: 'bvoqkfkyktqwe5sxkgpy',
+    host: 'bvoqkfkyktqwe5sxkgpy-mysql.services.clever-cloud.com',
     dialect: 'mysql',
   }
 };
