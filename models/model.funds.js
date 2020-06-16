@@ -1,20 +1,46 @@
-const FUNDS_STATUTS = ['waiting', 'gathering funds', 'done'];
+const FUNDS_STATUTS = { waiting: 'waiting', gathering: 'gathering funds', done: 'done' };
 
 module.exports = (sequelize, DataTypes) => {
-  return sequelize.define('Funds', {
+  const Funds = sequelize.define('Funds', {
     id: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
-      unique: true,
-      autoIncrement: true
     },
     amount: {
       type: DataTypes.FLOAT,
+      defaultValue: 0.0,
+      allowNull: false
     },
     status: {
-      type: DataTypes.ENUM(FUNDS_STATUTS)
+      type: DataTypes.ENUM(Object.values(FUNDS_STATUTS)),
+      defaultValue: FUNDS_STATUTS['waiting'],
+      allowNull: false
     }
   }, {
-    timestamps: false,
+    timestamps: true,
   });
+
+  Funds.associate = (models) => {
+    models.Funds.belongsTo(models.Aspirants, {
+      onDelete: "CASCADE",
+      foreignKey: {
+        name: 'aspirant_id',
+        allowNull: false,
+        unique: true
+      }
+    });
+    models.Funds.hasMany(models.Pieces, {
+      onDelete: "CASCADE",
+      foreignKey: {
+        name: 'fund_id',
+        allowNull: false,
+      }
+    });
+  }
+
+
+
+  Funds.FUNDS_STATUTS = FUNDS_STATUTS;
+  return Funds;
 };

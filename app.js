@@ -3,7 +3,7 @@ const logger = require('morgan');
 const cors = require('cors')
 
 const aspirantsRouter = require('./routes/route.Aspirants');
-const investorsRouter = require('./routes/route.Investors');
+// const investorsRouter = require('./routes/route.Investors');
 
 const app = express();
 const prefix = '/api/v1/';
@@ -17,7 +17,7 @@ app.use(express.json());
 /* Route */
 
 app.use(prefix, aspirantsRouter);
-app.use(prefix, investorsRouter);
+//app.use(prefix, investorsRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

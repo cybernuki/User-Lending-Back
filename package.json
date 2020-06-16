@@ -6,7 +6,7 @@
     "start": "node ./bin/www",
     "reboot": "node ./bin/www -s -f",
     "dev": "nodemon ./bin/www",
-    "test": "jest"
+    "test": "env MODE=test jest"
   },
   "dependencies": {
     "axios": "^0.19.2",
