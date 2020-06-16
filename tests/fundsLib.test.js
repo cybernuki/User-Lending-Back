@@ -1,5 +1,5 @@
-const { sequelize, Funds, Aspirants } = require('../models');
-const { create, search, updateAmount } = require('../lib/lib.funds');
+const { sequelize, Aspirants } = require('../models');
+const { create, search, updateAmount, changeStatus, getNextWaiting, getGathering, finishFund } = require('../lib/lib.funds');
 
 beforeAll(async () => {
   await sequelize.sync({ force: true });
@@ -50,11 +50,6 @@ const createGood = async () => {
   expect(fund.status).toEqual('waiting');
   expect(fund.aspirant_id).toEqual('aspirant4');
 
-  fund = await create('aspirant4', 'not status');
-  expect(fund).toBeTruthy();
-  expect(fund.amount).toEqual(0);
-  expect(fund.status).toEqual('waiting');
-  expect(fund.aspirant_id).toEqual('aspirant4');
 };
 
 const createBad = async () => {
@@ -72,73 +67,176 @@ const searchGood = async () => {
     let fund = await search('aspirant1');
 
     expect(fund).toBeTruthy();
-    expect(fund.amount).toEqual(0);
-    expect(fund.investor_email).toEqual('aspirant1');
+    expect(fund.status).toEqual('waiting');
+    expect(fund.aspirant_id).toEqual('aspirant1');
 
-    piece = await search('investor2', fund.id);
-    expect(piece).toBeTruthy();
-    expect(piece.amount).toEqual(1500000);
-    expect(piece.investor_email).toEqual('investor2');
+    fund = await search('aspirant2');
+
+    expect(fund).toBeTruthy();
+    expect(fund.status).toEqual('gathering funds');
+    expect(fund.aspirant_id).toEqual('aspirant2');
+
+    fund = await search('aspirant3');
+
+    expect(fund).toBeTruthy();
+    expect(fund.status).toEqual('done');
+    expect(fund.aspirant_id).toEqual('aspirant3');
+
+    fund = await search('aspirant4');
+
+    expect(fund).toBeTruthy();
+    expect(fund.status).toEqual('waiting');
+    expect(fund.aspirant_id).toEqual('aspirant4');
   } catch (error) {
     fail(error);
   }
 }
 
-// const searchBad = async () => {
-//   try {
-//     let piece = await search('investor1', 'bad fund id');
-//     expect(piece).toBeFalsy();
+const searchBad = async () => {
+  try {
+    let fund = await search('bad id');
+    expect(fund).toBeFalsy();
+  } catch (error) {
+    fail(error);
+  }
+}
 
-//     piece = await search('bad investor email', fund.id);
-//     expect(piece).toBeFalsy();
-//   } catch (error) {
-//     fail(error);
-//   }
-// }
+const updateGood = async () => {
+  try {
+    let fund = await search('aspirant1');
+    await updateAmount(fund.id, 20000);
+    let fund_1 = await search('aspirant1');
 
-// const updateGood = async () => {
-//   try {
-//     let fund = await Funds.findOne({ where: { aspirant_id: 'aspirant1' } });
-//     let piece1 = await search('investor1', fund.id);
-//     let piece2 = await search('investor2', fund.id);
+    expect(fund_1).toBeTruthy();
+    expect(fund_1.amount).toEqual(fund.amount + 20000);
+  } catch (error) {
+    fail(error);
+  }
+}
 
-//     await updateAmount('investor1', fund.id, 20000);
-//     let piece1_1 = await search('investor1', fund.id);
+const changeStatusGood = async () => {
+  try {
+    let fund1 = await search('aspirant1');
+    let fund2 = await search('aspirant2');
+    let fund3 = await search('aspirant3');
+    let fund4 = await search('aspirant4');
 
-//     expect(piece1_1.amount).toEqual(piece1.amount + 20000);
-//     expect(piece1_1.investor_email).toEqual(piece1.investor_email);
+    let change = await changeStatus(fund1.id, 'gathering');
+    fund1 = await search('aspirant1');
 
-//     await updateAmount('investor2', fund.id, 20000);
-//     let piece2_1 = await search('investor2', fund.id);
+    expect(change).toBeTruthy();
+    expect(fund1.status).toEqual('gathering funds');
 
-//     expect(piece2_1.amount).toEqual(piece2.amount + 20000);
-//     expect(piece2_1.investor_email).toEqual(piece2.investor_email);
-//   } catch (error) {
-//     fail(error);
-//   }
-// }
+    change = await changeStatus(fund2.id, 'waiting');
+    fund2 = await search('aspirant2');
 
-// const updateBad = async () => {
-//   try {
-//     let result = await updateAmount('bad investor email', 'bad fund id', 20000);
-//     expect(result).toBeFalsy();
+    expect(change).toBeTruthy();
+    expect(fund2.status).toEqual('waiting');
 
-//     result = await updateAmount('investor1', 'bad fund id', 20000);
-//     expect(result).toBeFalsy();
+    change = await changeStatus(fund3.id, 'waiting');
+    fund3 = await search('aspirant3');
 
-//   } catch (error) {
-//     fail(error);
-//   }
-// }
+    expect(change).toBeTruthy();
+    expect(fund3.status).toEqual('waiting');
+
+    change = await changeStatus(fund4.id, 'done');
+    fund4 = await search('aspirant4');
+
+    expect(change).toBeTruthy();
+    expect(fund4.status).toEqual('done');
+
+  } catch (error) {
+    fail(error);
+  };
+};
+const changeStatusBad = async () => {
+  try {
+    let fund = await search('aspirant4');
+
+    await changeStatus(fund.id, "not an status");
+    let fund1 = await search('aspirant4');
+    expect(fund.id).toEqual(fund1.id);
+    expect(fund.amount).toEqual(fund1.amount);
+    expect(fund.status).toEqual(fund1.status);
+  } catch (error) {
+    fail(error);
+  };
+};
+
+const nextWaitingGood = async () => {
+  try {
+    let fund3 = await search('aspirant3');
+    let fund2 = await search('aspirant2');
+    let next = await getNextWaiting();
+
+    expect(next.id === fund3.id || next.id === fund2.id).toBeTruthy();
+  } catch (error) {
+    fail(error);
+  };
+};
+
+const finishFundGood = async () => {
+  try {
+    let changedFund = null;
+    let next = await getNextWaiting();
+    let gathering = await getGathering();
+
+
+    //Finish a waiting fund returns false and don't change anything
+    failed = await finishFund(next.id);
+    expect(failed).toBeFalsy();
+
+    //Finish aspirant1 fund
+    await finishFund(gathering.id);
+    changedFund = await search(gathering.aspirant_id);
+    expect(changedFund.status).toEqual('done');
+    //get new gathering and compare with the previous next, both most be the same
+    //At this point aspirant 2 or 3 is the new gathering
+    gathering = await getGathering();
+    expect(next.id === gathering.id).toBeTruthy();
+    next = await getNextWaiting();
+
+    //Finish aspirant 2 o 3 fund
+    await finishFund(gathering.id);
+    changedFund = await search(gathering.aspirant_id);
+    expect(changedFund.status).toEqual('done');
+    //get new gathering and compare with the previous next, both most be the same
+    //At this point there are just one fund in waiting
+    gathering = await getGathering();
+    expect(next.id === gathering.id).toBeTruthy();
+    next = await getNextWaiting();
+
+    //Finish remain aspirant's fund
+    await finishFund(gathering.id);
+    changedFund = await search(gathering.aspirant_id);
+    expect(changedFund.status).toEqual('done');
+    //get new gathering and compare with the previous next, both most be the same
+    //At this point there are waiting funds no longer
+    gathering = await getGathering();
+    expect(next).toBeFalsy();
+
+    //Finish a done fund returns a false and don't change anything
+    failed = await finishFund(changedFund.id);
+    expect(failed).toBeFalsy();
+  } catch (error) {
+    fail(error);
+  }
+}
 
 describe('Testing fundsLib functionalities', () => {
-  it('checking implemented function', () => expect(create).toBeTruthy());
+  it('checking implemented create function', () => expect(create).toBeTruthy());
   it('Creating a piece with correct information', createGood);
   it('Creating a pice with incorrect information', createBad);
-  // it('checking implemented function', () => expect(search).toBeTruthy());
-  // it('searching a piece with correct information', searchGood);
-  // it('searching a piece with incorrect information', searchBad);
-  // it('checking implemented function', () => expect(update).toBeTruthy());
-  // it('update a piece with correct information', updateGood);
-  // it('update a piece with incorrect information', updateBad);
+  it('checking implemented  search function', () => expect(search).toBeTruthy());
+  it('searching a piece with correct information', searchGood);
+  it('searching a piece with incorrect information', searchBad);
+  it('checking implemented  updateAmount function', () => expect(updateAmount).toBeTruthy());
+  it('update a piece with correct information', updateGood);
+  it('checking implemented changeStatus function', () => expect(changeStatus).toBeTruthy());
+  it('changing status to a fund with correct information', changeStatusGood);
+  it('changing status to a fund with incorrect information', changeStatusBad);
+  it('checking implemented getNextWaiting function', () => expect(getNextWaiting).toBeTruthy());
+  it('geting next waiting fund ', nextWaitingGood);
+  it('checking implemented getNextWaiting function', () => expect(finishFund).toBeTruthy());
+  it('geting next waiting fund ', finishFundGood);
 });
